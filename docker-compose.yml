@@ -1,0 +1,61 @@
+
+services:
+  empor-io:
+    build:
+      context: .
+      dockerfile: ./EmporIO/Dockerfile
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./EmporIO:/home/quant/code/EmporIO
+      - ./DataManager:/home/quant/code/DataManager
+      - ./Quantify:/home/quant/code/Quantify
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  comercio-hub:
+    build:
+      context: .
+      dockerfile: ./ComercioHub/Dockerfile
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./ComercioHub:/code/ComercioHub
+      - ./ComercioHub/node_modules:/code/ComercioHub/node_modules
+
+  alpaca-marketstore:
+    image: alpacamarkets/marketstore:latest
+    ports:
+      - '5993:5993'
+      - '5995:5995'
+    volumes:
+      - ./config/mkts.yml:/etc/mkts.yml
+      - ./marketstore/data:/data
+
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s    
+  
+  nginx:
+    image: nginx:latest
+    ports:
+      - '80:80'
+    volumes:
+      - ./config/default.conf:/etc/nginx/conf.d/default.conf
+
+  # TODO: add options db service
+    
+volumes:
+  postgres_data:
