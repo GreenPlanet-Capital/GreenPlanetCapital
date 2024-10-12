@@ -23,6 +23,13 @@ services:
     volumes:
       - ./ComercioHub:/code/ComercioHub
       - ./ComercioHub/node_modules:/code/ComercioHub/node_modules
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./ComercioHub
+          target: /code/ComercioHub
+          ignore:
+            - node_modules
 
   alpaca-marketstore:
     image: alpacamarkets/marketstore:latest
