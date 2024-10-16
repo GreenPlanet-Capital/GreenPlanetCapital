@@ -13,6 +13,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    stdin_open: true
+    tty: true
 
   comercio-hub:
     build:
