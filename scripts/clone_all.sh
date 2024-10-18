@@ -9,4 +9,3 @@ gh repo list GreenPlanet-Capital --visibility public --limit 4000 | while read -
 done
 
 mkdir -p marketstore/data
-cp config/mkts.yml marketstore
